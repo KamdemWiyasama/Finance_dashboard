@@ -1,5 +1,9 @@
-from flask import Flask, render_template
+from flask import Flask
 from database import init_db
+import os
+
+print(os.path.abspath("database.db"))
+
 app = Flask(__name__)
 
 @app.route("/")#This is a decorator that defines a route for the web application. The "/" route is the root URL, meaning that when a user accesses the base URL of the application, this function will be executed.
