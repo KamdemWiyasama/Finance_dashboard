@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, render_template, request, redirect, url_for
+from dotenv import load_dotenv
 import requests
 from database import init_db
 import sqlite3
@@ -8,12 +9,10 @@ print(os.path.abspath("database.db"))
 
 app = Flask(__name__)
 
-
-
+load_dotenv()
+API_KEY = os.getenv("API_KEY")
 @app.route("/convert", methods=["GET"])
 def convert_currency():
-    conn= sqlite3.connect("database.db")
-    cursor= conn.cursor()
     
     try:
         amount= request.args.get("amount", type=float)
@@ -28,8 +27,10 @@ def convert_currency():
         if amount<=0:
             return jsonify({"error": 'Amount must be greater than zero.'})
         
-        API_KEY = "957a7516a61c51c5a598bf2e6d0b1acc"
+        
         url = f"https://api.exchangerate.host/convert?from={from_currency}&to={to_currency}&amount={amount}&access_key={API_KEY}"
+        if not API_KEY:
+            return jsonify({"error": "API key is missing."}), 500
         response = requests.get(url, timeout=5)
 
         if response.status_code != 200:
